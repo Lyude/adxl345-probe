@@ -1,4 +1,5 @@
 from . import probe, adxl345
+import time
 
 REG_THRESH_TAP = 0x1D
 REG_DUR = 0x21
@@ -116,12 +117,13 @@ class ADXL345Probe:
 
     def _try_clear_tap(self):
         chip = self.adxl345
-        tries = 8
+        tries = 16
         while tries > 0:
             val = chip.read_reg(REG_INT_SOURCE)
             if not (val & 0x40):
                 return True
             tries -= 1
+            time.sleep(0.01)
         return False
 
     def probe_prepare(self, hmove):

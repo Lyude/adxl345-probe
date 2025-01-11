@@ -8,13 +8,13 @@ TARGET_DIR="${HOME}/klipper/klippy/extras"
 PKGLIST=""
 
 function run() {
-    printf "Installing ADXL345 Probe, please check the docs after installing on how to configure the extension"
+    echo "Installing ADXL345 Probe, please check the docs after installing on how to configure the extension"
     if [ -d "${TARGET_DIR}" ]; then
-        printf "Linking extension... "
+        echo -n "Linking extension... "
         if ln -sf "${SRC_DIR}/adxl345_probe.py" "${TARGET_DIR}/adxl345_probe.py" &> /dev/null; then
-            printf "Installed component"
+            echo "Installed component"
         else
-            printf "Failed installing component"
+            echo "Failed installing component"
         fi
     fi
     sudo systemctl restart "klipper.service"

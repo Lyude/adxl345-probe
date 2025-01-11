@@ -4,6 +4,18 @@
 
 **!!! This project is in a BETA state, use at your own risk !!!**
 
+# Lyude's note!
+
+This is my fork of the experimental ADXL345 module for Klipper to enable Z-probing via use of the
+onboard toolhead PCB's accelerometer for the Positron V3.2. It contains any of the suggested changes
+that I've seen mentioned in the Discord channel that help with improving the accuracy of this.
+
+As many of the changes do not belong to me, I've noted the actual authors in each commit message.
+Where possible, I prefer to cherry-pick/merge commits from the actual author's branch to make this
+more obvious.
+
+# Original README
+
 The ADXL345 has an interesting feature called tap detection. With the appropriate tuning, this can be used to implement a nozzle probe on 3D printers.
 This project aims to support nozzle probing through tap detection for printers using Klipper.
 
@@ -22,7 +34,7 @@ I also measured the force on the bed using a standard kitchen scale, this was ap
 
 ```bash
 cd $HOME
-git clone https://github.com/jniebuhr/adxl345-probe
+git clone https://github.com/Lyude/adxl345-probe
 cd adxl345-probe
 ./scripts/install.sh
 ```

@@ -68,7 +68,7 @@ class ADXL345Probe:
         if self.inverted:
             chip.set_reg(adxl345.REG_DATA_FORMAT, 0x2B)
         chip.set_reg(REG_INT_MAP, self.int_map)
-        chip.set_reg(REG_TAP_AXES, 0x7)
+        chip.set_reg(REG_TAP_AXES, 0x4) # Use only vertical axis, helps lower errors on Positron
         chip.set_reg(REG_THRESH_TAP, int(self.tap_thresh / TAP_SCALE))
         chip.set_reg(REG_DUR, int(self.tap_dur / DUR_SCALE))
 

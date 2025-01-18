@@ -78,9 +78,9 @@ class ADXL345Probe:
         chip.set_reg(REG_TAP_AXES, 0x4) # Use only vertical axis, helps lower errors on Positron
         chip.set_reg(REG_THRESH_TAP, int(self.tap_thresh / TAP_SCALE))
         chip.set_reg(REG_DUR, int(self.tap_dur / DUR_SCALE))
-        chip.set_reg(REG_OFSX, int(self.x_accel_offset / OFFSET_SCALE))
-        chip.set_reg(REG_OFSY, int(self.y_accel_offset / OFFSET_SCALE))
-        chip.set_reg(REG_OFSZ, int(self.z_accel_offset / OFFSET_SCALE))
+        chip.set_reg(REG_OFSX, int(self.x_accel_offset / OFFSET_SCALE) & 0xff)
+        chip.set_reg(REG_OFSY, int(self.y_accel_offset / OFFSET_SCALE) & 0xff)
+        chip.set_reg(REG_OFSZ, int(self.z_accel_offset / OFFSET_SCALE) & 0xff)
 
     def handle_mcu_identify(self):
         self.phoming = self.printer.lookup_object('homing')
@@ -123,6 +123,16 @@ class ADXL345Probe:
         return self.cmd_helper.get_status(eventtime)
 
     def start_probe_session(self, gcmd):
+        # TODO: Somehow handle the situation where we're being used as an endstop
+
+        # Move near a height specified by the user before enabling the probe
+        toolhead = self.printer.lookup_object('toolhead')
+        current_xy = toolhead.get_position()[:2]
+        params = self.get_probe_params(gcmd)
+
+        gcmd.respond_info("Moving near bed to start boop")
+        toolhead.manual_move(current_xy + [params["sample_retract_dist"]], params["lift_speed"])
+
         return self.probe_session.start_probe_session(gcmd)
 
     def _try_clear_tap(self):

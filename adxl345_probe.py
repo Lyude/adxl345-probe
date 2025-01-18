@@ -7,9 +7,13 @@ REG_INT_MAP = 0x2F
 REG_TAP_AXES = 0x2A
 REG_INT_ENABLE = 0x2E
 REG_INT_SOURCE = 0x30
+REG_OFSX = 0x1E
+REG_OFSY = 0x1F
+REG_OFSZ = 0x20
 
 DUR_SCALE = 0.000625  # 0.625 msec / LSB
 TAP_SCALE = 0.0625 * adxl345.FREEFALL_ACCEL  # 62.5mg/LSB * Earth gravity in mm/s**2
+OFFSET_SCALE = 0.0156 * adxl345.FREEFALL_ACCEL # 15.6mg/LSB * Earth gravity in mm/s**2
 
 ADXL345_REST_TIME = .1
 
@@ -35,6 +39,9 @@ class ADXL345Probe:
         self.tap_dur = config.getfloat('tap_dur', 0.01, above=DUR_SCALE, maxval=0.1)
         self.position_endstop = config.getfloat('z_offset')
         self.disable_fans = [fan.strip() for fan in config.get("disable_fans", "").split(",") if fan]
+        self.x_accel_offset = config.getfloat('x_accel_offset', 0.)
+        self.y_accel_offset = config.getfloat('y_accel_offset', 0.)
+        self.z_accel_offset = config.getfloat('z_accel_offset', 0.)
 
         self.adxl345 = self.printer.lookup_object(adxl345_name)
         self.next_cmd_time = self.action_end_time = 0.
@@ -71,6 +78,9 @@ class ADXL345Probe:
         chip.set_reg(REG_TAP_AXES, 0x4) # Use only vertical axis, helps lower errors on Positron
         chip.set_reg(REG_THRESH_TAP, int(self.tap_thresh / TAP_SCALE))
         chip.set_reg(REG_DUR, int(self.tap_dur / DUR_SCALE))
+        chip.set_reg(REG_OFSX, int(self.x_accel_offset / OFFSET_SCALE))
+        chip.set_reg(REG_OFSY, int(self.y_accel_offset / OFFSET_SCALE))
+        chip.set_reg(REG_OFSZ, int(self.z_accel_offset / OFFSET_SCALE))
 
     def handle_mcu_identify(self):
         self.phoming = self.printer.lookup_object('homing')
